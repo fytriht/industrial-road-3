@@ -82,41 +82,37 @@ async function request(req: Request): Promise<Response> {
   }
 }
 
-async function main() {
-  let devices: Device[];
-  {
-    console.log("start fetching devices.");
-    const req = new Request("https://user-api.setapp.com/v1/devices");
-    const resp = await request(req);
-    devices = await resp.json().then((json): Device[] => json.data);
-  }
-
-  if (devices.length === 0) {
-    console.log("there are no active devices, closing...");
-    return;
-  }
-
-  console.log(
-    `fetched devices: ${devices.map((device) => device.name).join(", ")}`
-  );
-  assert(
-    devices.length === 1,
-    `Unexpected device count, got ${devices.length} devices.`
-  );
-  const deviceToBeDisconnect = devices.at(0)!;
-
-  console.log(`disconnecting device of id: ${deviceToBeDisconnect.id}`);
-  const req = new Request(
-    `https://user-api.setapp.com/v1/devices/${deviceToBeDisconnect.id}`,
-    { method: "DELETE" }
-  );
-  await request(req);
-  console.log("device disconnected");
-
-  if (env.password) {
-    await clipboard.writeText(env.password);
-  }
-  console.log("done.");
+let devices: Device[];
+{
+  console.log("start fetching devices.");
+  const req = new Request("https://user-api.setapp.com/v1/devices");
+  const resp = await request(req);
+  devices = await resp.json().then((json): Device[] => json.data);
 }
 
-main();
+if (devices.length === 0) {
+  console.log("there are no active devices, closing...");
+  Deno.exit();
+}
+
+console.log(
+  `fetched devices: ${devices.map((device) => device.name).join(", ")}`
+);
+assert(
+  devices.length === 1,
+  `Unexpected device count, got ${devices.length} devices.`
+);
+const deviceToBeDisconnect = devices.at(0)!;
+
+console.log(`disconnecting device of id: ${deviceToBeDisconnect.id}`);
+const req = new Request(
+  `https://user-api.setapp.com/v1/devices/${deviceToBeDisconnect.id}`,
+  { method: "DELETE" }
+);
+await request(req);
+console.log("device disconnected");
+
+if (env.password) {
+  await clipboard.writeText(env.password);
+}
+console.log("done.");
