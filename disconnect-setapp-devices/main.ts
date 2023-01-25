@@ -1,6 +1,14 @@
 import { assert } from "https://deno.land/std@0.173.0/testing/asserts.ts";
 import clipboard from "https://deno.land/x/clipboard@v0.0.2/mod.ts";
 
+/**
+ * This script disconnects all logged devices, which are helpful when using a Setapp account in multiple devices.
+ *
+ * Usage:
+ * 1. Set password environment variables which will be made available in clipboard after run, e.g. in fish `set -lx IR3_SETAPP_PSW "...."`
+ * 2. Run it `deno run --allow-env --allow-run --reload --allow-net "https://raw.githubusercontent.com/fytriht/industrial-road-3/main/disconnect-setapp-devices/main.ts"`.
+ */
+
 const tokenStore = (() => {
   const KEY_TOKEN = "Token";
   const KEY_REFRESH_TOKEN = "RefreshToken";
@@ -33,7 +41,7 @@ const tokenStore = (() => {
 })();
 
 const env = {
-  password: Deno.env.get("ESD_SET_APP_PSW"),
+  password: Deno.env.get("IR3_SETAPP_PSW"),
 } as const;
 
 interface Device {
