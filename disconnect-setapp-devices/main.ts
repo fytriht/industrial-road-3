@@ -61,19 +61,21 @@ async function request(req: Request): Promise<Response> {
   if (resp.ok) {
     return resp;
   } else if (resp.status === 401) {
-    console.log("token expired, refreshing");
-    const req = new Request("https://user-api.setapp.com/v1/token", {
-      method: "POST",
-      body: JSON.stringify({
-        refresh_token: tokenStore.getRefreshToken(),
-      }),
-    });
-    const resp = await request(req);
-    const data = await resp
-      .json()
-      .then((json): { token: string; refresh_token: string } => json.data);
-    tokenStore.setToken(data.token);
-    tokenStore.setRefreshToken(data.refresh_token);
+    {
+      console.log("token expired, refreshing");
+      const req = new Request("https://user-api.setapp.com/v1/token", {
+        method: "POST",
+        body: JSON.stringify({
+          refresh_token: tokenStore.getRefreshToken(),
+        }),
+      });
+      const resp = await fetch(req);
+      const data = await resp
+        .json()
+        .then((json): { token: string; refresh_token: string } => json.data);
+      tokenStore.setToken(data.token);
+      tokenStore.setRefreshToken(data.refresh_token);
+    }
 
     console.log("token refreshed, start resending request");
     return request(req);
