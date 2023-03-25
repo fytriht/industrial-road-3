@@ -74,6 +74,11 @@ async function request(req: Request): Promise<Response> {
         },
       });
       const resp = await fetch(req);
+      if (!resp.ok) {
+        throw new Error(
+          `Request error: ${resp.url}\n Status: ${resp.status} ${resp.statusText}`
+        );
+      }
       const data = await resp
         .json()
         .then((json): { token: string; refresh_token: string } => json.data);
