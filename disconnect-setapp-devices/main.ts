@@ -68,6 +68,10 @@ async function request(req: Request): Promise<Response> {
         body: JSON.stringify({
           refresh_token: tokenStore.getRefreshToken(),
         }),
+        headers: {
+          Authorization: `Bearer ${tokenStore.getToken()}`,
+          Accept: "application/json",
+        },
       });
       const resp = await fetch(req);
       const data = await resp
