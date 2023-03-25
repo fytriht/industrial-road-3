@@ -89,7 +89,7 @@ async function request(req: Request): Promise<Response> {
     console.log("token refreshed, start resending request");
     return request(req);
   } else {
-    throw Error(`request error: ${req.url}`);
+    throw new Error(`request error: ${req.url}`);
   }
 }
 
